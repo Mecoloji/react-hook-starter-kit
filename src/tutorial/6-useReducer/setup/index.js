@@ -1,15 +1,8 @@
 import React, { useState, useReducer } from "react";
 import Modal from "./Modal";
 import { data } from "../../../data";
+import { reducer } from "./reducer";
 // reducer function
-
-const reducer = (state, action) => {
-  if (action.type === "TESTING") {
-    return {...state, people: data}
-  }
-
-  return state;
-};
 
 const defaultState = {
   people: [],
@@ -27,14 +20,24 @@ const Index = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name) {
-      dispatch({ type: "TESTING" });
+      const newItem = { id: new Date().getTime().toString(), name };
+      dispatch({ type: "ITEM_ADDED", payload: newItem });
+      setName("");
     } else {
+      dispatch({ type: "NO_VALUE" });
       // setShowModal(true);
     }
   };
+
+  const closeModal = () => {
+    dispatch({ type: "MODAL_KAPAT" });
+  };
+
   return (
     <>
-      {state.isModalOpen && <Modal modalContent={state.modalContent} />}
+      {state.isModalOpen && (
+        <Modal closeModal={closeModal} modalContent={state.modalContent} />
+      )}
       <form onSubmit={handleSubmit} className="form">
         <div>
           <input
@@ -47,8 +50,15 @@ const Index = () => {
       </form>
       {state.people.map((person) => {
         return (
-          <div key={person.id}>
+          <div key={person.id} className="item">
             <h4>{person.name}</h4>
+            <button
+              onClick={() =>
+                dispatch({ type: "ÖGEYİ_KAPAT", payload: person.id })
+              }
+            >
+              Remove
+            </button>
           </div>
         );
       })}
